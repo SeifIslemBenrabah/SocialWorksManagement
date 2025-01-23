@@ -5,14 +5,14 @@ import esilogo from '../Assets/esilogo.png'
 const ForgetPwd = () => {
     return (
         <div className="flex flex-row justify-center items-center bg-gradient-to-b from-white to-blue-500 w-full h-screen">
-          <div className="bg-white w-1/2 h-2/3 rounded-md flex flex-row relative">
+          <div className="bg-white px-4 md:pr-4 md:px-0 w-2/3 md:w-1/2 h-1/2  md:h-2/3 rounded-md flex flex-row relative">
             {/* Background Image */}
-            <div className="overflow-hidden opacity-80">
+            <div className="hidden md:block overflow-hidden opacity-80">
               <img src={login} alt="login" className="h-full blur-sm contrast-125" />
             </div>
     
             {/* Main Content */}
-            <div className="flex flex-col items-center w-1/2 ml-10 pt-[86px] gap-5 relative overflow-visible">
+            <div className="flex flex-col items-center w-full md:w-1/2 md:ml-10 pt-10 md:pt-[86px] gap-5 relative overflow-visible">
             <a href='/login' className='absolute bottom-10 bg-blue-200 rounded-full py-1 pl-2 pr-3 gap-2 text-white flex flex-row'>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -20,8 +20,8 @@ const ForgetPwd = () => {
             <p>Back to Login</p>
             </a>
               {/* Logos Positioned in the Middle */}
-              <img src={cnaslogo} alt="cnaslogo" className="w-16 absolute bottom-3 -left-24 transform -translate-x-1/2  flex flex-row items-center" />
-                <img src={esilogo} alt="esi sba logo" className="w-20 absolute bottom-10 -left-10 transform -translate-x-1/2  flex flex-row items-center " />
+              <img src={cnaslogo} alt="cnaslogo" className="w-16 absolute bottom-3 -left-24 transform -translate-x-1/2 hidden  md:flex flex-row items-center" />
+                <img src={esilogo} alt="esi sba logo" className="w-20 absolute bottom-10 -left-10 transform -translate-x-1/2 hidden  md:flex flex-row items-center " />
     
               <h1 className="text-xl font-semibold">Forget password!</h1>
               <h1 className='text-sm'>Enter your email to recive code & set new password</h1>

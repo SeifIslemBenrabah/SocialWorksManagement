@@ -21,28 +21,24 @@ const Login = () => {
       };
   return (
     <div className="flex flex-row justify-center items-center bg-gradient-to-b from-white to-pblue w-full h-screen">
-      <div className="bg-white w-1/2 h-2/3 rounded-md flex flex-row relative">
-        {/* Background Image */}
-        <div className="overflow-hidden opacity-80 rounded-md">
-          <img src={loginimg} alt="login" className="h-full blur-sm contrast-125" />
-        </div>
-
-        {/* Main Content */}
-        <div className="flex flex-col items-center w-1/2 ml-10 py-8 gap-5 relative">
-        <a href='/' className='absolute bottom-10 bg-blue-200 rounded-full py-1 pl-2 pr-3 gap-2 text-white flex flex-row'>
+      <a href='/' className='absolute top-2 left-4 bg-dblue rounded-full py-1 pl-2 pr-3 gap-2 text-white flex flex-row'>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
         </svg>
-        <p>Back to home</p>
         </a>
-          {/* Logos Positioned in the Middle */}
-          <img src={cnaslogo} alt="cnaslogo" className="w-16 absolute bottom-3 -left-24 transform -translate-x-1/2  flex flex-row items-center" />
-            <img src={esilogo} alt="esi sba logo" className="w-20 absolute bottom-10 -left-10 transform -translate-x-1/2  flex flex-row items-center " />
+      <div className="bg-white w-2/3 gap-0 md:w-1/2 h-1/2 md:h-2/3 rounded-md flex flex-row relative">
+        <div className="hidden md:block overflow-hidden opacity-80 rounded-md ">
+          <img src={loginimg} alt="login" className="h-full blur-sm contrast-125" />
+        </div>
+
+        <div className="flex flex-col items-center w-full md:w-1/2 ml-0 md:ml-10 py-8 px-4 gap-5  relative">
+        
+          <img src={cnaslogo} alt="cnaslogo" className="w-16 hidden md:absolute bottom-3 -left-24 transform -translate-x-1/2  md:flex flex-row items-center" />
+            <img src={esilogo} alt="esi sba logo" className="w-20 hidden md:absolute bottom-10 -left-10 transform -translate-x-1/2  md:flex flex-row items-center " />
 
           <h1 className="text-xl font-semibold">Sign In</h1>
 
-          {/* Email Input */}
-          <div className="relative w-full max-w-sm">
+          <div className="relative w-full">
             <input
               type="email"
               id="email"
@@ -60,8 +56,7 @@ const Login = () => {
             </label>
           </div>
 
-          {/* Password Input */}
-          <div className="relative w-full max-w-sm">
+          <div className="relative w-full ">
             <input
               type="password"
               id="password"
@@ -81,18 +76,17 @@ const Login = () => {
           {errorMessage && (
             <div className="text-red-600 text-sm">{errorMessage}</div>
           )}
-          {/* Remember Me & Forget Password */}
-          <div className="flex flex-row w-full justify-between items-center">
-            <div className="flex flex-row justify-center gap-1">
+          <div className="flex flex-col  md:flex-row w-full justify-between">
+            <div className="flex flex-row  gap-1">
               <input type="checkbox" name="save" className="mt-[2px]" />
               <p>Remember Me</p>
             </div>
-            <a href="/ForgetPwd" className="text-blue-500 hover:underline">
+            <div className='flex justify-end'>
+            <a href="/ForgetPwd" className="text-blue-500 underline ">
               Forget Password?
             </a>
+            </div>
           </div>
-
-          {/* Sign Up Button */}
           <button onClick={doLogin} className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
             Sign Up
           </button>

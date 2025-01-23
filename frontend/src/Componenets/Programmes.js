@@ -34,10 +34,10 @@ const Programmes = () => {
       )
     );
   return (
-    <div className='w-full flex flex-col pt-10 items-center gap-6 bg-secondary font-poppins pb-6'>
-      <div className='flex flex-row w-9/12 justify-between'>
-        <div className='flex flex-row gap-4'>
-          <div className='relative'>
+    <div className='w-full flex flex-col pt-10 items-center gap-16 md:gap-6 bg-white md:bg-secondary font-poppins pb-6'>
+      <div className='flex flex-col gap-2 md:gap-0 md:flex-row w-11/12 md:w-9/12 justify-between'>
+        <div className='flex flex-col md:flex-row gap-4'>
+          <div className='relative '>
             <div className='absolute top-3 left-2'>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -99,11 +99,11 @@ const Programmes = () => {
           </svg>
         </button>
       </div>
-      <div className='flex flex-col w-9/12 h-[420px] border-[1px] justify-between rounded-xl overflow-hidden bg-white2'>
-        <div className='flex flex-row pt-4 w-full justify-between px-8'>
+      <div className='flex flex-col w-full md:w-9/12 h-[420px] border-[1px] justify-between rounded-xl overflow-hidden bg-white2'>
+        <div className='flex flex-col gap-3 md:gap-0 md:flex-row pt-4 w-full justify-between px-8'>
           <select
             name="langageMaitrise"
-            className='w-3/12 border-2 border-dblue focus:outline-none rounded-md py-1 px-2'
+            className='w-full md:w-3/12 border-2 border-dblue focus:outline-none rounded-md py-1 px-2'
           >
             <option value="Categorie">Categorie</option>
             <option value="Categorie">Categorie</option>
@@ -154,7 +154,7 @@ const Programmes = () => {
             </div>
           </div>
         </div>
-        <div className='grid grid-cols-3 grid-flow-row gap-x-3 gap-y-2 pt-4 w-full justify-between border-y-[0.1px] border-gray-200 px-8 mt-5 overflow-auto scrollbar-hide'>
+        <div className='grid grid-cols-1 md:grid-cols-3 grid-flow-row gap-x-3 gap-y-2 pt-4 w-full justify-between border-y-[0.1px] border-gray-200 px-8 mt-5 overflow-auto scrollbar-hide'>
           <ProgrammeCard title='Seif' status='active' des='seif islekadhgsajhbdkjna' />
           <ProgrammeCard title='Seif' status='active' des='seif islekadhgsajhbdkjna' />
           <ProgrammeCard title='Seif' status='active' des='seif islekadhgsajhbdkjna' />
