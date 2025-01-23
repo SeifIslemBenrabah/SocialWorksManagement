@@ -5,8 +5,8 @@ const SpendingPieChart = () => {
   const chartRef = useRef(null);
 
   useEffect(() => {
-    const width = 300;  // Reduced the width for a more compact chart
-    const height = 300; // Matching height for a balanced aspect ratio
+    const width = 200;  // Reduced the width for a more compact chart
+    const height = 200; // Matching height for a balanced aspect ratio
     const margin = 20;  // Increased margin for better spacing
     const radius = Math.min(width, height) / 2 - margin;
 

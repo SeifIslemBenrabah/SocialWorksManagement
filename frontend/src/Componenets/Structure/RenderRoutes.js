@@ -8,6 +8,8 @@ import NotFound from '../NotFound'
 import { AuthData } from '../../Auth/AuthWrapper'
 import Commette from '../Commette'
 import Programmes from '../Programmes'
+import Demand from '../Demand'
+import Profile from '../Profile'
 const RenderRoutes = () => {
     const {user}= AuthData();
     console.log(user)
@@ -23,6 +25,8 @@ const RenderRoutes = () => {
       <Route index element={<Navigate to="Dashboard" />} />
       <Route path="Dashboard" element={<DashboardC/>} />
       <Route path="Programmes" element={<Programmes/>}/>
+      <Route path="Demand" element={<Demand/>}/>
+      <Route path="Profile" element={<Profile/>}/>
       </Route>
     </>
     )}

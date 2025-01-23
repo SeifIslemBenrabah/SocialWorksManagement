@@ -20,7 +20,7 @@ const Login = () => {
         }
       };
   return (
-    <div className="flex flex-row justify-center items-center bg-gradient-to-b from-white to-blue-500 w-full h-screen">
+    <div className="flex flex-row justify-center items-center bg-gradient-to-b from-white to-pblue w-full h-screen">
       <div className="bg-white w-1/2 h-2/3 rounded-md flex flex-row relative">
         {/* Background Image */}
         <div className="overflow-hidden opacity-80 rounded-md">
