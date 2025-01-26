@@ -31,7 +31,7 @@ const Home = () => {
         <img src={Heropic} alt='img' className='md:w-1/2 md:float-right md:mr-5'/>
         <div className='md:ml-24 px-4'>
           <h1 className='text-4xl font-bold font-poppins text-black2 text-center mb-10'>ESI SBA Employees</h1>
-          <p className='text-2xl font-medium font-poppins text-white'> Join us to get your financial requests are met by the <span className='text-black2'>Committee</span></p>
+          <p className='text-2xl font-medium font-poppins text-white'> Join us to get your financial requests are met by the <span className='text-black2 font-semibold'>Committee</span></p>
           <p className='text-gray-600 font-normal font-poppins text-lg mt-2'>To have your demand consulted and have a response in a short time, without wasting time and energy</p>
           <button className='bg-pblue text-white px-20 py-2 rounded-md mt-10 font-medium'>Login Now </button>
         </div>

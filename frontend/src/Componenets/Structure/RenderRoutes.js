@@ -10,6 +10,10 @@ import Commette from '../Commette'
 import Programmes from '../Programmes'
 import Demand from '../Demand'
 import Profile from '../Profile'
+import Meeting from '../Meeting'
+import UDemand from '../UDemand'
+import UProgrammes from '../UProgrammes'
+import Users from '../Users'
 const RenderRoutes = () => {
     const {user}= AuthData();
     console.log(user)
@@ -27,11 +31,18 @@ const RenderRoutes = () => {
       <Route path="Programmes" element={<Programmes/>}/>
       <Route path="Demand" element={<Demand/>}/>
       <Route path="Profile" element={<Profile/>}/>
+      <Route path="Meeting" element={<Meeting/>}/>
       </Route>
     </>
     )}
-    {user.isAuth && user.role=== "User"&&(
+    {user.isAuth && user.role=== "user"&&(
       <>
+      <Route path='/Users' element={<Users/>}>
+      <Route index element={<Navigate to="UProgrammes"/>} />
+      <Route path="UProgrammes" element={<UProgrammes/>}/>
+      <Route path="UDemand" element={<UDemand/>}/>
+      <Route path="Profile" element={<Profile/>}/>
+      </Route>
     </>
     )}
     <Route path='*' element={<NotFound/>}/>

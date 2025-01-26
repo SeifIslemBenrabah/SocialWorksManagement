@@ -20,29 +20,17 @@ const Commette = () => {
         </div>
         <div className='flex flex-col justify-between h-full py-6'>
         <div className='flex flex-col gap-3'>
-            <Link to='Dashboard' className='flex flex-row gap-3 px-6 w-full'>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
-            </svg>
-            <p className='hidden md:block'>Dashboard</p>
-            </Link>
-            <Link to='Programmes' className='flex flex-row gap-3 px-6 w-full'>
+            <Link to='UProgrammes' className='flex flex-row gap-3 px-6 w-full'>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
             </svg>
             <p className='hidden md:block'>Programmes</p>
             </Link>
-            <Link to='Demand' className='flex flex-row gap-3 px-6 w-full'>
+            <Link to='UDemand' className='flex flex-row gap-3 px-6 w-full'>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
             </svg>
-            <p className='hidden md:block'>Demand</p>
-            </Link>
-            <Link to='Meeting' className='flex flex-row gap-3 px-6 w-full'>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
-            </svg>
-            <p className='hidden md:block'>Meeting</p>
+            <p className='hidden md:block'>My Demand</p>
             </Link>
         </div>
         <div className='flex flex-col gap-3'>
@@ -69,9 +57,8 @@ const Commette = () => {
         </div>
         </div>
         <div className='w-5/6 h-full flex flex-col'>
-        <div className='w-full flex flex-row py-4 justify-between pl-6 pr-6 items-center shadow-md bg-white'>
-            <div className='text-xl font-bold text-dblue'>
-                Dashboard
+        <div className='w-full flex flex-row py-4 justify-between pl-6 pr-6 items-center  bg-white'>
+            <div className='text-xl font-bold text-dblue '>
             </div>
             <div className='flex flex-row gap-8'>
                 <div className='flex flex-row items-center gap-2'>

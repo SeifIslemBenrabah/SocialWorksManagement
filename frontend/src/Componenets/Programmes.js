@@ -166,7 +166,7 @@ const Programmes = () => {
       </div>
       {popupadd && (
         <div className='fixed top-0 left-0 flex items-center justify-center w-full h-screen bg-gray-950 bg-opacity-10'>
-          <div className='w-1/3 h-5/6 overflow-hidden bg-white rounded-md flex flex-col items-center px-10 pt-2 gap-2 relative'>
+          <div className='w-11/12 md:w-1/3 h-5/6 overflow-hidden bg-white rounded-md flex flex-col items-center px-10 pt-2 gap-2 relative'>
           <button onClick={()=>setpopupadd(false)} className='absolute top-1 right-2 text-red-600'>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
@@ -288,7 +288,7 @@ const Programmes = () => {
       )}
       {addcat&& (
         <div className='fixed top-0 left-0 flex items-center justify-center w-full h-screen bg-gray-950 bg-opacity-10'>
-          <div className='w-1/3 h-2/3 overflow-hidden bg-white rounded-md flex flex-col items-center px-10 pt-2 gap-2 relative'>
+          <div className='w-11/12 md:w-1/3 h-2/3 overflow-hidden bg-white rounded-md flex flex-col items-center px-10 pt-2 gap-2 relative'>
           <button onClick={()=>setaddcat(false)} className='absolute top-1 right-2 text-red-600'>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />

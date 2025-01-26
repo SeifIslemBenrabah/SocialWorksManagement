@@ -29,13 +29,13 @@ const AuthWrapper = () => {
 const login = async (email, password) => {  
   if (email && password) {
     try {
-      if (email === "admin@gmail.com" && password === "admin") {
+      if (email === "user@gmail.com" && password === "user") {
         const id = 1;
-        const role = "admin";
+        const role = "user";
         const accessToken = 'seifislem';  // This would be the actual token from the backend
 
         if (role) {
-          navigate("/Commette");  // Navigate to Dashboard
+          navigate("/Users");  // Navigate to Dashboard
         } else {
           console.log("Unhandled role");
         }
@@ -45,7 +45,7 @@ const login = async (email, password) => {
           email,
           isAuth: true,
           token: accessToken,
-          role: 'admin',
+          role: 'user',
           id,
         });
       }
