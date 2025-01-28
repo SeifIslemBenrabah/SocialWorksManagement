@@ -14,6 +14,7 @@ import Meeting from '../Meeting'
 import UDemand from '../UDemand'
 import UProgrammes from '../UProgrammes'
 import Users from '../Users'
+import ProgrammeDetail from '../ProgrammeDetail'
 const RenderRoutes = () => {
     const {user}= AuthData();
     console.log(user)
@@ -40,6 +41,7 @@ const RenderRoutes = () => {
       <Route path='/Users' element={<Users/>}>
       <Route index element={<Navigate to="UProgrammes"/>} />
       <Route path="UProgrammes" element={<UProgrammes/>}/>
+      <Route path="programme/:id" element={<ProgrammeDetail />} />
       <Route path="UDemand" element={<UDemand/>}/>
       <Route path="Profile" element={<Profile/>}/>
       </Route>
