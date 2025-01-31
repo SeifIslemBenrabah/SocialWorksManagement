@@ -16,8 +16,8 @@ UserRole.init(
     },
   },
   {
-    sequelize, 
-    modelName: 'UserRole', // Use new name
+    sequelize,  // Pass the sequelize instance here
+    modelName: 'UserRole',
     timestamps: false,
   }
 );

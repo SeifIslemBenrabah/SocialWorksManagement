@@ -21,9 +21,14 @@ User.init(
     }
   },
   {
-    sequelize, 
+    sequelize,  // Pass the sequelize instance here
     modelName: 'User',
   }
 );
+
+// Associations
+User.associate = (models) => {
+  User.hasMany(models.Account, { foreignKey: 'userId', onDelete: 'CASCADE' });
+};
 
 module.exports = User;

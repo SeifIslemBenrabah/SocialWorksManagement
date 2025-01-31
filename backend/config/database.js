@@ -1,4 +1,4 @@
-const  Sequelize  = require('sequelize');
+const { Sequelize } = require('sequelize');
 require('dotenv').config(); 
 
 // Create a new Sequelize instance
@@ -12,9 +12,9 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 async function testConnection() {
   try {
     await sequelize.authenticate();
-    console.log(' MySQL Database Connected Successfully!');
+    console.log('MySQL Database Connected Successfully!');
   } catch (error) {
-    console.error(' Unable to connect to MySQL:', error);
+    console.error('Unable to connect to MySQL:', error);
   }
 }
 

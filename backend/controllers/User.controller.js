@@ -1,4 +1,4 @@
-const User = require('../models/User'); // ✅ Keep separate imports
+const User = require('../models/User');
 const Account = require('../models/Account'); 
 const {UserRole} = require('../models/UserRole'); 
 const bcrypt = require('bcrypt');
@@ -71,11 +71,64 @@ const loginUser = async (req, res) => {
         return res.json({ accessToken, role: userRole.roleName });
     } catch (err) {
         console.error(err);
-        return res.status(500).json({ error: `Backend error: ${err.message}` });
+        return res.status(500).json({ error: `Server error: ${err.message}` });
+    }
+};
+const deleteAccount = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Find the account to delete
+        const account = await Account.findOne({ where: { id } });
+
+        if (!account) {
+            return res.status(404).send(`No account found with ID: ${id}`);
+        }
+
+        const userId = account.userId;
+
+        // Delete the account
+        await Account.destroy({ where: { id } });
+
+        // Check if the user has another account
+        const anotherAccount = await Account.findOne({ where: { userId } });
+
+        if (!anotherAccount) {
+            await User.destroy({ where: { id: userId } });
+            return res.status(200).send(`Account and user with ID: ${userId} have been deleted.`);
+        }
+
+        return res.status(200).send(`Account with ID: ${id} has been deleted.`);
+    } catch (err) {
+        res.status(500).json({ error: `Server error: ${err.message}` });
+    }
+};
+
+const getAll = async (req, res) => {
+    try {
+        const accounts = await Account.findAll({
+            attributes: { exclude: ['password'] },
+            include: [
+                {
+                    model: User,
+                    attributes: ['id', 'fullName', 'email']
+                },
+                {
+                    model: UserRole,
+                    attributes: ['id', 'roleName'] 
+                }
+            ]
+        });
+
+        res.status(200).json(accounts);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 };
 
 module.exports = {
     createUser,
+    deleteAccount,
+    getAll,
     loginUser
 };
