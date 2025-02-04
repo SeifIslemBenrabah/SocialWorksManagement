@@ -4,6 +4,8 @@ const sequelize = require('./config/database');
 require('dotenv').config();  
 const userRoute = require('./Routes/user.route');
 const loginRoute = require('./Routes/login.route');
+const CategorieRoute = require('./Routes/Categorie.route')
+const ProgrammeRoute = require('./Routes/Programme.route')
 const { initializeRoles } = require('./models/UserRole');
 const PORT = process.env.PORT || 5000;
 
@@ -13,7 +15,8 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/users', userRoute);  
 app.use('/login', loginRoute); 
-
+app.use('/Categorie',CategorieRoute)
+app.use('/Programme',ProgrammeRoute)
 async function startServer() {
   try {
     await sequelize.authenticate(); 
