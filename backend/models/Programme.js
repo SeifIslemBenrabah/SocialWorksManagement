@@ -1,5 +1,7 @@
 const {DataTypes,Model} = require('sequelize');
 const sequelize = require("../config/database");
+const Pcondition = require("./Pcondition")
+const Categorie = require("./Categorie")
 class Programme extends Model {}
 Programme.init(
     {
@@ -21,15 +23,19 @@ Programme.init(
             allowNull: false
         },
         status:{
-            type: DataTypes.ENUM('active','Expired'),
+            type: DataTypes.ENUM('active','expired'),
             allowNull:false,
-            unique:true,
+
             defaultValue: 'active'
         }
-    }
+    },
+    {
+        sequelize,  
+        modelName: 'Programme',
+        timestamps: false,
+      }
 );
-Programme.associate = (models) =>{
-    Programme.belongsTo(models.Categorie,{foreignKey:'categorieId',onDelete:'CASCADE'});
-    Programme.hasMany(models.Pcondition,{foreignKey:'programmeId',onDelete:'CASCADE'});
-}
+Programme.hasMany(Pcondition,{foreignKey:'programmeId',onDelete:'CASCADE'});
+
+Programme.belongsTo(Categorie, { foreignKey: "categorieId", onDelete: "CASCADE" });
 module.exports = Programme;

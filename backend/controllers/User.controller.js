@@ -77,9 +77,7 @@ const loginUser = async (req, res) => {
 const deleteAccount = async (req, res) => {
     try {
         const { id } = req.params;
-
-        // Find the account to delete
-        const account = await Account.findOne({ where: { id } });
+        const account = await Account.findOne({ where: { id:id } });
 
         if (!account) {
             return res.status(404).send(`No account found with ID: ${id}`);
@@ -87,10 +85,8 @@ const deleteAccount = async (req, res) => {
 
         const userId = account.userId;
 
-        // Delete the account
-        await Account.destroy({ where: { id } });
+        await Account.destroy({ where: { id:id } });
 
-        // Check if the user has another account
         const anotherAccount = await Account.findOne({ where: { userId } });
 
         if (!anotherAccount) {
@@ -125,10 +121,74 @@ const getAll = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+const getByUserRole = async(req,res) => {
+    try{
+        const {id} = req.params;
+        const userRole = UserRole.findOne({where:{id:id}})
+        if(!userRole){
+            res.status(404).send('there is no role with this id')
+        }
+        const accounts = Account.findAll({where:{
+            roleId:id
+        },
+        attributes: { exclude: ['password'] },
+            include: [
+                {
+                    model: User,
+                    attributes: ['id', 'fullName', 'email']
+                },
+                {
+                    model: UserRole,
+                    attributes: ['id', 'roleName'] 
+                }
+            ]
+    })
+        res.status(200).json(accounts)
+    }
+    catch(err){
+        res.status(500).send(err)
+    }
+}
+const getByEmailOrName = async (req, res) => {
+    try {
+        const { query } = req.query;
+        if (!query) {
+            return res.status(400).json({ error: "Query is required" });
+        }
+
+        const accounts = await Account.findAll({
+            attributes: { exclude: ['password'] },  
+            include: [
+                {
+                    model: User,
+                    attributes: ['id', 'fullName', 'email'],
+                    where: {
+                        [Op.or]: [
+                            { fullName: { [Op.like]: `%${query}%` } },
+                            { email: { [Op.like]: `%${query}%` } }
+                        ]
+                    }
+                },
+                {
+                    model: UserRole,
+                    attributes: ['id', 'roleName']
+                }
+            ]
+        });
+        if (accounts.length === 0) {
+            return res.status(200).json([]); // Empty array when no programmes found
+        }
+        res.status(200).json(accounts);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 
 module.exports = {
     createUser,
     deleteAccount,
     getAll,
+    getByUserRole,
+    getByEmailOrName,
     loginUser
 };

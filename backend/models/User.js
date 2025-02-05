@@ -26,7 +26,7 @@ User.init(
   }
 );
 
-// Associations
+
 User.associate = (models) => {
   User.hasMany(models.Account, { foreignKey: 'userId', onDelete: 'CASCADE' });
 };

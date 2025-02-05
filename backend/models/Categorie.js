@@ -1,29 +1,22 @@
-const { DataTypes, Model } = require('sequelize');
+const { DataTypes } = require('sequelize');
 const sequelize = require("../config/database");
+ // Import Programme model
 
-class Categorie extends Model {}
-
-Categorie.init(
-  {
+const Categorie = sequelize.define("Categorie", {
     id: { 
-      type: DataTypes.BIGINT, 
-      autoIncrement: true,
-      primaryKey: true
+        type: DataTypes.BIGINT, 
+        autoIncrement: true,
+        primaryKey: true
     },
     CategorieName: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true
-    },
-  },
-  {
-    sequelize,  
-    modelName: 'Categorie',
-    timestamps: false,
-  }
-);
-Categorie.associate = (models) => {
-    Categorie.hasMany(models.Programme, { foreignKey: "categorieId", onDelete: "CASCADE" });
-};
+    }
+}, {
+    timestamps: false
+});
+
+
 
 module.exports = Categorie;
