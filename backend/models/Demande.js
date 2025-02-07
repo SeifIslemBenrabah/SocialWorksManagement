@@ -2,8 +2,10 @@ const {DataTypes,Model} = require('sequelize');
 const sequelize = require("../config/database");
 const User = require("./User")
 const Programme = require("./Programme")
-class Demand extends Model {}
-Demand.init(
+const File = require("./File")
+class Demande extends Model {
+}
+Demande.init(
     {
         id:{
             type: DataTypes.BIGINT,
@@ -18,10 +20,6 @@ Demand.init(
             type: DataTypes.BIGINT,
             allowNull: false,
         },
-        date:{
-            type: DataTypes.DATE,
-            allowNull: false
-        },
         status:{
             type: DataTypes.ENUM('Accepted','Complet','Waiting','Incomplet'),
             allowNull:false,
@@ -30,12 +28,12 @@ Demand.init(
     },
     {
         sequelize,  
-        modelName: 'Demand',
-        timestamps: false,
+        modelName: 'Demande',
+        timestamps: true,
       }
 );
 
-Demand.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
-Demand.belongsTo(Programme,{foreignKey: "programmeId",onDelete: "CASCADE"})
+Demande.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
+Demande.belongsTo(Programme,{foreignKey: "programmeId",onDelete: "CASCADE"})
 
-module.exports = Demand;
+module.exports = Demande;

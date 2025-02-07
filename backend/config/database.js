@@ -15,7 +15,7 @@ async function testConnection() {
     console.error('Unable to connect to MySQL:', error);
   }
 }
-
+sequelize.sync({force:false})
 testConnection();
 
 module.exports = sequelize;

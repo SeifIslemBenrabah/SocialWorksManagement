@@ -2,7 +2,11 @@ const {DataTypes,Model} = require('sequelize');
 const sequelize = require("../config/database");
 const Pcondition = require("./Pcondition")
 const Categorie = require("./Categorie")
-class Programme extends Model {}
+class Programme extends Model {
+    static associate  (models)  {
+        Programme.hasMany(models.Categorie, { foreignKey: 'userId', onDelete: 'CASCADE' });
+      };
+}
 Programme.init(
     {
         id:{
@@ -35,7 +39,6 @@ Programme.init(
         timestamps: false,
       }
 );
-Programme.hasMany(Pcondition,{foreignKey:'programmeId',onDelete:'CASCADE'});
 
-Programme.belongsTo(Categorie, { foreignKey: "categorieId", onDelete: "CASCADE" });
+
 module.exports = Programme;

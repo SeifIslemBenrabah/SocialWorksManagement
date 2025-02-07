@@ -1,7 +1,11 @@
 const { DataTypes, Model } = require('sequelize');
 const sequelize = require("../config/database");
 
-class User extends Model {}
+class User extends Model {
+  static associate  (models)  {
+    User.hasMany(models.Account, { foreignKey: 'userId', onDelete: 'CASCADE' });
+  };
+}
 
 User.init(
   {
@@ -21,14 +25,12 @@ User.init(
     }
   },
   {
-    sequelize,  // Pass the sequelize instance here
+    sequelize,  
     modelName: 'User',
   }
 );
 
 
-User.associate = (models) => {
-  User.hasMany(models.Account, { foreignKey: 'userId', onDelete: 'CASCADE' });
-};
+
 
 module.exports = User;
