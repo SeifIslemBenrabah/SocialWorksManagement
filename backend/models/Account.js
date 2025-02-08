@@ -32,7 +32,10 @@ Account.init(
   }
 );
 
+// Associations
   Account.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
   Account.belongsTo(UserRole, { foreignKey: 'roleId' });
+  User.hasMany(Account, { foreignKey: 'userId', onDelete: 'CASCADE' });
+  UserRole.hasMany(Account,{ foreignKey: 'roleId' })
 
 module.exports = Account;

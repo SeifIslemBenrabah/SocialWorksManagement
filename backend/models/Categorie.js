@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require("../config/database");
- // Import Programme model
 
 const Categorie = sequelize.define("Categorie", {
     id: { 

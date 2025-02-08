@@ -34,6 +34,9 @@ Demande.init(
 );
 
 Demande.belongsTo(User, { foreignKey: "userId", onDelete: "CASCADE" });
-Demande.belongsTo(Programme,{foreignKey: "programmeId",onDelete: "CASCADE"})
-
+User.hasMany(Demande,{ foreignKey: "userId", onDelete: "CASCADE" });
+Demande.belongsTo(Programme,{foreignKey: "programmeId",onDelete: "CASCADE"});
+Programme.hasMany(Demande,{foreignKey: "programmeId",onDelete: "CASCADE"});
+Demande.hasMany(File,{foreignKey:"demandeId",onDelete:"CASCADE"});
+File.belongsTo(Demande,{foreignKey:"demandeId",onDelete:"CASCADE"});
 module.exports = Demande;

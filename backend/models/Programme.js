@@ -3,9 +3,6 @@ const sequelize = require("../config/database");
 const Pcondition = require("./Pcondition")
 const Categorie = require("./Categorie")
 class Programme extends Model {
-    static associate  (models)  {
-        Programme.hasMany(models.Categorie, { foreignKey: 'userId', onDelete: 'CASCADE' });
-      };
 }
 Programme.init(
     {
@@ -40,5 +37,9 @@ Programme.init(
       }
 );
 
+Programme.belongsTo(Categorie, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Programme.hasMany(Pcondition,{foreignKey:'programmeId',onDelete:'CASCADE'});
+Categorie.hasMany(Programme,{foreignKey: 'userId', onDelete: 'CASCADE'});
+Pcondition.belongsTo(Programme,{foreignKey:'programmeId',onDelete:'CASCADE'});
 
 module.exports = Programme;

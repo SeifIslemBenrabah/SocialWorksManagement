@@ -9,25 +9,30 @@ UserRole.init(
       type: DataTypes.BIGINT, 
       primaryKey: true
     },
+    roletype:{
+      type: DataTypes.ENUM('Admin', 'Employee', 'Committee'),
+      allowNull: false,
+    },
     roleName: {
-        type: DataTypes.ENUM('President', 'Vice President', 'Normal Member', 'Treasurer', 'Employee'),
-        allowNull: false,
-        unique: true
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {
     sequelize,  // Pass the sequelize instance here
     modelName: 'UserRole',
     timestamps: false,
+    tableName:'UserRoles'
   }
 );
 
 const predefinedRoles = [
-  { id: 1, roleName: 'President' },
-  { id: 2, roleName: 'Vice President' },
-  { id: 3, roleName: 'Normal Member' },
-  { id: 4, roleName: 'Treasurer' },
-  { id: 5, roleName: 'Employee' },
+  { id: 1, roletype: 'Admin', roleName: null },
+  { id: 2, roletype: 'Employee', roleName: null },
+  { id: 3, roletype: 'Committee', roleName: 'President' },
+  { id: 4, roletype: 'Committee', roleName: 'Vice President' },
+  { id: 5, roletype: 'Committee', roleName: 'Treasurer' },
+  { id: 6, roletype: 'Committee', roleName: 'Normal Member' },
 ];
 
 async function initializeRoles() {

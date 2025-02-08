@@ -6,7 +6,6 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   dialect: 'mysql',
   logging: false, 
 });
-sequelize.sync({ force: false });
 async function testConnection() {
   try {
     await sequelize.authenticate();
@@ -15,7 +14,7 @@ async function testConnection() {
     console.error('Unable to connect to MySQL:', error);
   }
 }
-sequelize.sync({force:false})
+sequelize.sync({ force: false })
 testConnection();
 
 module.exports = sequelize;
