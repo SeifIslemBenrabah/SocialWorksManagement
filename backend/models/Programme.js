@@ -26,7 +26,6 @@ Programme.init(
         status:{
             type: DataTypes.ENUM('active','expired'),
             allowNull:false,
-
             defaultValue: 'active'
         }
     },
@@ -37,9 +36,9 @@ Programme.init(
       }
 );
 
-Programme.belongsTo(Categorie, { foreignKey: 'userId', onDelete: 'CASCADE' });
+Programme.belongsTo(Categorie, { foreignKey: 'categorieId', onDelete: 'CASCADE' });
 Programme.hasMany(Pcondition,{foreignKey:'programmeId',onDelete:'CASCADE'});
-Categorie.hasMany(Programme,{foreignKey: 'userId', onDelete: 'CASCADE'});
+Categorie.hasMany(Programme,{foreignKey: 'categorieId', onDelete: 'CASCADE'});
 Pcondition.belongsTo(Programme,{foreignKey:'programmeId',onDelete:'CASCADE'});
 
 module.exports = Programme;

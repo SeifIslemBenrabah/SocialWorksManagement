@@ -1,154 +1,192 @@
-const Demand = require('../models/Demande')
-const Programme = require('../models/Programme')
-const User = require('../models/User')
-const addDemand  = async(req,res)=>{
-    try{
-        const {userId,programmeId,status,conditions}  = req.body
-        
-        const user = User.findOne({where:{id:userId}})
-        const programme = Programme.findOne({where:{id:programmeId}})
-        if(!user || !programme ){
-            res.status(403).send('wrong body')
-        }
-        const demand = await Demand.create({userId:userId,programmeId:programmeId,status:status})
+const { Op, Sequelize } = require('sequelize');
+const Demand = require('../models/Demande');
+const Programme = require('../models/Programme');
+const User = require('../models/User');
+const File = require('../models/File');
+const Categorie = require('../models/Categorie');
+const fs = require('fs');
+const path = require('path');
 
-        res.status(200).send('the programme created!!')
-    }
-    catch(err){
-        res.status(500).send(err)
-    }
-}
-const deletedemand = async(req,res)=>{
-    try{
-    const {id} = req.params;
-    const demand = Demand.findOne({where:{id:id}})
-    if(!demand){
-        res.status(404).send('there is no programme with this id')
-    }
-    await Demand.destroy({where:{id:id}})
-    res.status(200).send('the programme is deleted!!')
-    }
-    catch(err){
-        res.status(500).send(err)
-    }
-}
-const deleteCondition = async(req,res)=>{
-    try{
-        const {id} = req.params
-    const condition = await Pcondition.findOne({where:{id:id}})
-    if(!condition){
-        res.status(404).send('there is no condition with this id')
-    }
-    await Pcondition.destroy({where:{id:id}})
-    res.status(200).send('the condition is deleted!!')
-    }catch(err){
-        res.status(500).send(err)
-    }
-}
-const getall = async(req,res)=>{
-    try{
-        const programmes = await Programme.findAll({
-            include:[
-                {
-                    model:Pcondition,
-                    attributes:['id','programmeId','Condition']
-                },
-        {
-            model: Categorie, 
-            attributes: ['CategorieName'] 
-        }
-            ]
-        })
-        res.status(200).send(programmes)
-    }catch(err){
-        res.status(500).send(err)
-    }
-}
-const getProgrammes = async (req, res) => {
+const addDemand = async (req, res) => {
     try {
-        let { queryStatus, queryCategorie, queryTitle } = req.query;
+        console.log("📂 Request Body:", req.body);
+        console.log("📁 Uploaded Files:", req.files); // Debugging
 
-        // Convert query values to lowercase before checking
-        queryStatus = queryStatus ? queryStatus.toLowerCase() : '';
-        queryTitle = queryTitle ? queryTitle.toLowerCase() : '';
+        const { userId, programmeId, status } = req.body;
+        let files = req.files || []; // Handle files correctly
 
-        // Prepare the where condition object
-        const whereCondition = {};
-
-        // Check if status query is valid ('active' or 'expired')
-        if (queryStatus && !['active', 'expired'].includes(queryStatus)) {
-            return res.status(400).json({ error: "QueryStatus must be 'active' or 'expired'" });
+        if (!userId || isNaN(userId)) {
+            return res.status(400).json({ error: "Invalid or missing userId" });
+        }
+        if (!programmeId || isNaN(programmeId)) {
+            return res.status(400).json({ error: "Invalid or missing programmeId" });
         }
 
-        // Add status to the where condition if provided
-        if (queryStatus) {
-            whereCondition.status = queryStatus;
+        // Ensure User and Programme exist
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
         }
 
-        // Add categorieId to the where condition if provided
-        if (queryCategorie) {
-            whereCondition.categorieId = queryCategorie;
+        const programme = await Programme.findByPk(programmeId);
+        if (!programme) {
+            return res.status(404).json({ error: "Programme not found" });
         }
 
-        // Add title search to the where condition if provided
-        if (queryTitle) {
-            whereCondition.title = { [Op.like]: `%${queryTitle}%` };
+        // Create the demand
+        const demand = await Demand.create({ userId, programmeId, status });
+
+        // 🔹 Ensure `files` is always an array
+        if (!Array.isArray(files)) {
+            files = [files]; // Convert single file to an array
         }
 
-        // Fetch programmes based on the dynamic where condition
-        const programmes = await Programme.findAll({
-            where: whereCondition,
+        // 🔹 Save files, if any
+        if (files.length > 0) {
+            const fileData = files.map((file) => ({
+                demandeId: demand.id,
+                name: file.originalname,
+                path: `uploads/${file.filename}`
+            }));
+
+            await File.bulkCreate(fileData);
+        }
+
+        return res.status(201).json({ message: "Demand created successfully", demand });
+
+    } catch (err) {
+        console.error("❌ Error in addDemand:", err);
+        return res.status(500).json({
+            error: "Internal server error",
+            details: err.message
+        });
+    }
+};
+
+
+
+
+const deletedemand = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const demand = await Demand.findOne({ where: { id } });
+        if (!demand) {
+            return res.status(404).json({ error: 'There is no demand with this ID' });
+        }
+        const files = await File.findAll({ where: { demandeId: id } });
+
+        files.forEach((file) => {
+            if (fs.existsSync(file.path)) {
+                fs.unlinkSync(file.path);
+            }
+        });
+
+        await File.destroy({ where: { demandeId: id } });
+
+        await Demand.destroy({ where: { id } });
+
+        return res.status(200).json({ message: 'The demand and its files are deleted successfully' });
+    } catch (err) {
+        console.error("Error in deletedemand:", err);
+        return res.status(500).json({ error: 'Internal server error', details: err.message });
+    }
+};
+
+
+const getall = async (req, res) => {
+    try {
+        const demandes = await Demand.findAll({
             include: [
                 {
-                    model: Pcondition,
-                    attributes: ['id', 'programmeId', 'Condition']
+                    model: File,
+                    attributes: ['id', 'name', 'path']
+                },
+                {
+                    model: Programme,
+                    attributes: ['title'],
+                    include: [{ model: Categorie, attributes: ['CategorieName'] }]
                 }
             ]
         });
 
-        // If no programmes are found, return an empty array
-        if (programmes.length === 0) {
-            return res.status(200).json([]); // Empty array when no programmes found
-        }
-
-        // Return the fetched programmes
-        res.status(200).json(programmes);
+        return res.status(200).json(demandes);
     } catch (err) {
-        res.status(500).send(err);
+        console.error("Error in getall:", err);
+        return res.status(500).json({ error: 'Internal server error', details: err.message });
     }
 };
 
-const updateprogramme = async(req,res)=>{
-    try{
+const updatedemand = async (req, res) => {
+    try {
         const { id } = req.params;
-    const { conditions, ...programmeData } = req.body;
+        const { files, ...programmeData } = req.body;
 
-    const programme = await Programme.findOne({ where: { id: id } });
-    if (!programme) {
-      return res.status(404).send('There is no programme with this ID');
+        const programme = await Programme.findOne({ where: { id } });
+        if (!programme) {
+            return res.status(404).json({ error: 'There is no programme with this ID' });
+        }
+
+        await Programme.update(programmeData, { where: { id } });
+
+        if (files && files.length > 0) {
+            await File.destroy({ where: { demandeId: id } });
+
+            const insertFiles = files.map((file) => ({
+                demandeId: id,
+                name: file.originalname,
+                path: `uploads/${file.filename}`
+            }));
+            await File.bulkCreate(insertFiles);
+        }
+
+        return res.status(200).json({ message: 'The programme has been updated successfully' });
+    } catch (err) {
+        console.error("Error in updateprogramme:", err);
+        return res.status(500).json({ error: 'Internal server error', details: err.message });
     }
-    await Programme.update(programmeData, { where: { id: id } });
+};
+const getDemands = async (req, res) => {
+    try {
+        let {  queryCategorie, queryTitle } = req.query;
 
-    if (conditions && conditions.length > 0) {
-      await Pcondition.destroy({ where: { programmeId: id } });
 
-      const insertConditions = conditions.map((condition) => ({
-        programmeId: id,
-        Condition: condition,
-      }));
-      await Pcondition.bulkCreate(insertConditions);
+        const whereCondition = {};
+
+        if (queryCategorie) {
+            whereCondition.categorieId = queryCategorie;
+        }
+
+        if (queryTitle && typeof queryTitle === 'string' && queryTitle.trim() !== '') {
+            whereCondition[Op.and] = [
+                Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('title')), {
+                    [Op.like]: `%${queryTitle.toLowerCase()}%`
+                })
+            ];
+        }
+        const demandes = await Demand.findAll({
+            include: [
+                {
+                    model: Programme,
+                    where: whereCondition,
+                    attributes: ['id', 'categorieId', 'title','description']
+                }
+            ]
+        });
+
+        return res.status(200).json(demandes);
+    } catch (err) {
+        console.error("Error in getdemands:", err);
+        return res.status(500).json({ error: "Internal server error", details: err.message });
     }
+};
 
-    res.status(200).send('The programme has been updated successfully');
-    }catch(err){
-        res.status(500).send(err)
-    }
-}
+
+
 module.exports = {
     addDemand,
     deletedemand,
-    deleteCondition,
     getall,
-    updateprogramme,
-    getProgrammes
-}
+    updatedemand,
+    getDemands
+};

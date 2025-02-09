@@ -13,7 +13,7 @@ const File = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        demandeId: { // Foreign key
+        demandeId: {
             type: DataTypes.BIGINT,
             allowNull: false,
         },

@@ -14,7 +14,7 @@ Pcondition.init(
         type: DataTypes.BIGINT, 
         allowNull: false
       },
-    condition: {
+    Condition: {
       type: DataTypes.STRING,
       allowNull: false,
     },
