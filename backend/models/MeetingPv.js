@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
-const File = sequelize.define(
-    "File",
+const MeetingPv = sequelize.define(
+    "MeetingPv",
     {
         id: {
             type: DataTypes.BIGINT,
@@ -13,7 +13,7 @@ const File = sequelize.define(
             type: DataTypes.STRING,
             allowNull: false,
         },
-        demandeId: {
+        meetingPvId: {
             type: DataTypes.BIGINT,
             allowNull: false,
         },
@@ -24,9 +24,9 @@ const File = sequelize.define(
     },
     {
         sequelize,
-        modelName: "File",
+        modelName: "MeetingPv",
         timestamps: true,
     }
 );
 
-module.exports = File;
+module.exports = MeetingPv;

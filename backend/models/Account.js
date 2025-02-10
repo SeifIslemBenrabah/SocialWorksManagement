@@ -25,7 +25,7 @@ Account.init(
     }
   },
   {
-    sequelize,  // Pass the sequelize instance here
+    sequelize,  
     modelName: 'Account',
     tableName: 'Accounts',
     timestamps: true,
@@ -34,8 +34,8 @@ Account.init(
 
 // Associations
   Account.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
-  Account.belongsTo(UserRole, { foreignKey: 'roleId' });
+  Account.belongsTo(UserRole, { foreignKey:"roleId" });
   User.hasMany(Account, { foreignKey: 'userId', onDelete: 'CASCADE' });
-  UserRole.hasMany(Account,{ foreignKey: 'roleId' })
+  UserRole.hasMany(Account,{ foreignKey:"roleId" })
 
 module.exports = Account;

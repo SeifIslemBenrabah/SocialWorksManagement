@@ -1,6 +1,7 @@
 const {DataTypes,Model} = require('sequelize');
 const sequelize = require("../config/database");
 const Account = require('./Account')
+const MeetingPv = require('./MeetingPv')
 class Meet extends Model {}
 Meet.init(
     {
@@ -28,6 +29,14 @@ Meet.init(
         timestamps: false,
       }
 )
-Meet.belongsToMany(Account, {through: "MeetMembers",foreignKey: "meetId",otherKey: "accountId",scope: {userRoleId: [3, 4, 5, 6]}});
-Account.belongsToMany(Meet, {through: "MeetMembers",foreignKey: "accountId",otherKey: "meetId",});
+Meet.belongsToMany(Account, {through: "MeetMembers",
+    foreignKey: "meetId",
+    otherKey: "accountId",
+    scope: {roleId: [3, 4, 5, 6]}});
+Account.belongsToMany(Meet, {through: "MeetMembers",
+    foreignKey: "accountId",
+    otherKey: "meetId",});
+
+Meet.hasMany(MeetingPv,{foreignKey:"meetingPvId",onDelete:"CASCADE"});
+MeetingPv.belongsTo(Meet,{foreignKey:"meetingPvId",onDelete:"CASCADE"});
 module.exports = Meet;

@@ -8,6 +8,7 @@ const CategorieRoute = require('./Routes/Categorie.route')
 const ProgrammeRoute = require('./Routes/Programme.route')
 const DemandeRoute = require('./Routes/Demande.route')
 const MeetRoute = require('./Routes/Meet.route')
+const MeetingPvRoute = require('./Routes/MeetingPv.route')
 const { initializeRoles } = require('./models/UserRole');
 const PORT = process.env.PORT || 5000;
 
@@ -21,6 +22,7 @@ app.use('/Categorie',CategorieRoute)
 app.use('/Programme',ProgrammeRoute)
 app.use('/Demand',DemandeRoute)
 app.use('/Meet',MeetRoute)
+app.use('/MeetingPv',MeetingPvRoute)
 async function startServer() {
   try {
     await sequelize.authenticate(); 
