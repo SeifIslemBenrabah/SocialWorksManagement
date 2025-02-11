@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
 
 const { createMeetingPv,updatePv,deletePv,getPv} = require('../controllers/MeetingPv.controller')
 //add
-router.post('/',upload.single('Pv'),createMeetingPv)
+router.post('/',upload.single('file'),createMeetingPv)
 //get
 router.get('/:id',getPv)
 //update

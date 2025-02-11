@@ -8,7 +8,7 @@ const createMeetingPv = async (req, res) => {
     try {
         const { meetingId, name } = req.body;
         const pvPath = req.file ? `uploads/${req.file.filename}` : null;
-
+        console.log(req.file);
         if (!meetingId) {
             return res.status(400).json({ msg: "Need the Meet ID!" });
         }
@@ -16,19 +16,16 @@ const createMeetingPv = async (req, res) => {
         const meet = await Meet.findOne({ where: { id: meetingId } });
 
         if (!meet) {
-            return res.status(404).json({ msg: "There is no demand with this ID!" });
+            return res.status(404).json({ msg: "There is no meet with this ID!" });
         }
 
-        // Check if a PV already exists for this meeting
         let pv = await MeetingPv.findOne({ where: { meetingPvId: meetingId } });
 
         if (pv) {
-            // Delete old file if exists
             if (pv.path && fs.existsSync(pv.path)) {
                 fs.unlinkSync(pv.path);
             }
 
-            // Update existing record
             await pv.update({ name, path: pvPath });
             return res.status(200).json({ msg: "PV updated successfully!", pv });
         }

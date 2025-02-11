@@ -7,7 +7,7 @@ const createMeet = async(req,res)=>{
     try{
         const {name,date,time,meetmembers} = req.body
         if(!name || !date || !time || !meetmembers){
-            res.status(403).send('wrong body')
+            return res.status(403).send('wrong body')
         }
         const meet  = await Meet.create({name:name,date:date,time:time})
         const validAccounts = await Account.findAll({
