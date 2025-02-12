@@ -15,6 +15,8 @@ import UDemand from '../UDemand'
 import UProgrammes from '../UProgrammes'
 import Users from '../Users'
 import ProgrammeDetail from '../ProgrammeDetail'
+import Admin from '../Admin'
+import EmployeList from '../EmployeList'
 const RenderRoutes = () => {
     const {user}= AuthData();
     console.log(user)
@@ -24,7 +26,7 @@ const RenderRoutes = () => {
       <Route path='/' element={<Home/>}/>
       <Route path='/login' element={<Login/>}/>
       <Route path='/ForgetPwd' element={<ForgetPwd/>}/>
-      {user.isAuth && user.role === "admin" &&(
+      {user.isAuth && user.role === "comitte" &&(
       <>
       <Route path='/Commette' element={<Commette/>}>
       <Route index element={<Navigate to="Dashboard" />} />
@@ -46,6 +48,14 @@ const RenderRoutes = () => {
       <Route path="Profile" element={<Profile/>}/>
       </Route>
     </>
+    )}
+    {user.isAuth && user.role === "admin"&&(
+      <>
+      <Route path='/Admin' element={<Admin/>}>
+      <Route index element={<Navigate to="Employe"/>} />
+      <Route path="Employe" element={<EmployeList/>}/>
+      </Route>
+      </>
     )}
     <Route path='*' element={<NotFound/>}/>
     </Routes>

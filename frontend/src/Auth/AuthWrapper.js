@@ -31,11 +31,11 @@ const login = async (email, password) => {
     try {
       if (email === "user@gmail.com" && password === "user") {
         const id = 1;
-        const role = "user";
+        const role = "admin";
         const accessToken = 'seifislem';  // This would be the actual token from the backend
 
         if (role) {
-          navigate("/Users");  // Navigate to Dashboard
+          navigate("/Admin");  // Navigate to Dashboard
         } else {
           console.log("Unhandled role");
         }
@@ -45,7 +45,7 @@ const login = async (email, password) => {
           email,
           isAuth: true,
           token: accessToken,
-          role: 'user',
+          role: 'admin',
           id,
         });
       }
