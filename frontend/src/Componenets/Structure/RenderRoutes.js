@@ -17,6 +17,7 @@ import Users from '../Users'
 import ProgrammeDetail from '../ProgrammeDetail'
 import Admin from '../Admin'
 import EmployeList from '../EmployeList'
+import CommiteList from '../CommiteList'
 const RenderRoutes = () => {
     const {user}= AuthData();
     console.log(user)
@@ -54,6 +55,7 @@ const RenderRoutes = () => {
       <Route path='/Admin' element={<Admin/>}>
       <Route index element={<Navigate to="Employe"/>} />
       <Route path="Employe" element={<EmployeList/>}/>
+      <Route path="Commite" element={<CommiteList/>}/>
       </Route>
       </>
     )}

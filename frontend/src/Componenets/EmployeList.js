@@ -18,8 +18,7 @@ const EmployeList = () => {
       <div className="w-full flex flex-row py-5 justify-between pl-6 pr-6 items-center shadow-md bg-transparent">
         <div className="text-xl font-bold text-dblue">All employers</div>
       </div>      
-      <div className="bg-secondary w-full flex-grow -z-10 flex items-center pl-32 pr-40">
-        
+      <div className="bg-secondary w-full flex-grow -z-10 grid grid-cols-5 gap-5">
       </div>
     </div>
   );
