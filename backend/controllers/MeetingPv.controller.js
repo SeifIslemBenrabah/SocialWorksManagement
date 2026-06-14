@@ -3,117 +3,111 @@ const path = require('path');
 const MeetingPv = require('../models/MeetingPv');
 const Meet = require('../models/Meet');
 
-// ✅ Ajouter un pv
+const UPLOADS_DIR = path.resolve(__dirname, '../uploads');
+
+const safeFilePath = (relativePath) => {
+  const resolved = path.resolve(__dirname, '../', relativePath);
+  if (!resolved.startsWith(UPLOADS_DIR)) return null;
+  return resolved;
+};
+
 const createMeetingPv = async (req, res) => {
-    try {
-        const { meetingId, name } = req.body;
-        const pvPath = req.file ? `uploads/${req.file.filename}` : null;
-        console.log(req.file);
-        if (!meetingId) {
-            return res.status(400).json({ msg: "Need the Meet ID!" });
-        }
+  try {
+    const { meetingId, name } = req.body;
+    const pvPath = req.file ? `uploads/${req.file.filename}` : null;
 
-        const meet = await Meet.findOne({ where: { id: meetingId } });
-
-        if (!meet) {
-            return res.status(404).json({ msg: "There is no meet with this ID!" });
-        }
-
-        let pv = await MeetingPv.findOne({ where: { meetingPvId: meetingId } });
-
-        if (pv) {
-            if (pv.path && fs.existsSync(pv.path)) {
-                fs.unlinkSync(pv.path);
-            }
-
-            await pv.update({ name, path: pvPath });
-            return res.status(200).json({ msg: "PV updated successfully!", pv });
-        }
-
-        // Create a new PV if not found
-        pv = await MeetingPv.create({ name, meetingPvId: meetingId, path: pvPath });
-
-        return res.status(201).json({ msg: "PV is created!", pv });
-    } catch (err) {
-        console.error("Error in createfile:", err);
-        return res.status(500).json({ msg: err.message });
+    if (!meetingId) {
+      return res.status(400).json({ message: 'meetingId is required' });
     }
+
+    const meet = await Meet.findOne({ where: { id: meetingId } });
+    if (!meet) {
+      return res.status(404).json({ message: 'Meeting not found' });
+    }
+
+    let pv = await MeetingPv.findOne({ where: { meetingPvId: meetingId } });
+
+    if (pv) {
+      if (pv.path) {
+        const existing = safeFilePath(pv.path);
+        if (existing && fs.existsSync(existing)) fs.unlinkSync(existing);
+      }
+      await pv.update({ name, path: pvPath });
+      return res.status(200).json({ message: 'PV updated successfully', pv });
+    }
+
+    pv = await MeetingPv.create({ name, meetingPvId: meetingId, path: pvPath });
+    return res.status(201).json({ message: 'PV created', pv });
+  } catch (err) {
+    console.error('Error in createMeetingPv:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
-
-// ✅ Récupérer un pv
 const getPv = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const pv = await MeetingPv.findOne({ where: { id:id } });
+  try {
+    const { id } = req.params;
+    const pv = await MeetingPv.findOne({ where: { id } });
 
-        if (!pv) {
-            return res.status(404).json({ msg: "File not found" });
-        }
-
-        const pvPath = path.join(__dirname, "../", pv.path);
-        
-        res.set({
-            'Content-Type': 'multipart/form-data',
-            'X-Custom-Header': 'CustomHeaderValue',
-        });
-
-        return res.sendFile(pvPath, (err) => {
-            if (err) {
-                return res.status(500).json({ msg: "Error sending the file." });
-            }
-        });
-    } catch (err) {
-        console.error("Error in getfile:", err);
-        return res.status(500).json({ msg: err.message });
+    if (!pv) {
+      return res.status(404).json({ message: 'PV not found' });
     }
+
+    const pvPath = safeFilePath(pv.path);
+    if (!pvPath) {
+      return res.status(400).json({ message: 'Invalid file path' });
+    }
+
+    if (!fs.existsSync(pvPath)) {
+      return res.status(404).json({ message: 'File no longer exists on disk' });
+    }
+
+    return res.sendFile(pvPath, (err) => {
+      if (err) return res.status(500).json({ message: 'Error sending the file' });
+    });
+  } catch (err) {
+    console.error('Error in getPv:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
-// ✅ Mettre à jour un pv
 const updatePv = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const pv = await MeetingPv.findOne({ where: { id:id } });
+  try {
+    const { id } = req.params;
+    const pv = await MeetingPv.findOne({ where: { id } });
 
-        if (!pv) {
-            return res.status(404).json({ msg: "There is no pv with this ID" });
-        }
-
-        await MeetingPv.update(req.body, { where: { id:id } });
-
-        return res.status(200).json({ msg: "The pv is updated successfully" });
-    } catch (err) {
-        console.error("Error in updatefile:", err);
-        return res.status(500).json({ msg: err.message });
+    if (!pv) {
+      return res.status(404).json({ message: 'PV not found' });
     }
+
+    await MeetingPv.update(req.body, { where: { id } });
+    return res.status(200).json({ message: 'PV updated successfully' });
+  } catch (err) {
+    console.error('Error in updatePv:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
-// ✅ Supprimer un pv
 const deletePv = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const pv = await MeetingPv.findOne({ where: { id:id } });
+  try {
+    const { id } = req.params;
+    const pv = await MeetingPv.findOne({ where: { id } });
 
-        if (!pv) {
-            return res.status(404).json({ msg: "There is no pv with this ID" });
-        }
-
-       // Delete the physical file if it exists
-       if (pv.path && fs.existsSync(pv.path)) {
-        fs.unlinkSync(pv.path);
+    if (!pv) {
+      return res.status(404).json({ message: 'PV not found' });
     }
 
-        await pv.destroy();
-        return res.status(200).json({ msg: "The pv is deleted successfully" });
-    } catch (err) {
-        console.error("Error in deletefile:", err);
-        return res.status(500).json({ msg: err.message });
+    if (pv.path) {
+      const pvPath = safeFilePath(pv.path);
+      if (pvPath && fs.existsSync(pvPath)) fs.unlinkSync(pvPath);
     }
+
+    await pv.destroy();
+    return res.status(200).json({ message: 'PV deleted successfully' });
+  } catch (err) {
+    console.error('Error in deletePv:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
-module.exports = {
-    createMeetingPv,
-    getPv,
-    updatePv,
-    deletePv
-};
+module.exports = { createMeetingPv, getPv, updatePv, deletePv };

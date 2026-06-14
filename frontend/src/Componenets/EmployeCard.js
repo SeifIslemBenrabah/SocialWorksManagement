@@ -1,8 +1,8 @@
 import React from 'react'
 
-const EmployeCard = ({ id, name , img }) => {
+const EmployeCard = ({ id, name , img ,onClick}) => {
   return (
-    <div className='bg-white rounded-lg flex flex-col gap-3 items-center justify-center border-2 border-dblue p-4'>
+    <div className='bg-white h-64 rounded-lg flex flex-col gap-3 items-center justify-center border-2 border-dblue p-2'  onClick={onClick} >
         <div className='w-9/12 rounded-full bg-black overflow-hidden'>
         <img src={img} alt={name}/>
         </div>

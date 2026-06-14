@@ -1,96 +1,97 @@
-const { where, Op } = require('sequelize')
-const Payment = require('../models/Payment')
-const addpayment = async(req,res)=>{
-    try{
-        const {paymentTitle,paymentDate,paymentMontant,paymentType} = req.body
-        if(!paymentTitle || !paymentDate || !paymentMontant || !paymentType){
-           return res.status(403).send('wrong body')
-        }
-        const payment = await Payment.create({paymentTitle:paymentTitle,paymentDate:paymentDate,paymentMontant:paymentMontant,paymentType:paymentType})
-        return res.status(203).json({msg:"payment add successfully",payment})
-    }catch(err){
-        res.status(500).send(err)
+const { Op, Sequelize } = require('sequelize');
+const Payment = require('../models/Payment');
+
+const addpayment = async (req, res) => {
+  try {
+    const { paymentTitle, paymentDate, paymentMontant, paymentType } = req.body;
+    if (!paymentTitle || !paymentDate || !paymentMontant || !paymentType) {
+      return res.status(400).json({ error: 'paymentTitle, paymentDate, paymentMontant and paymentType are required' });
     }
-}
-const getall = async(req,res)=>{
-    try{
-        const payments = await Payment.findAll({})
-        if(payments.length === 0){
-            return res.status(404).json({msg:"no payment found"})
-        }
-        return res.status(200).json(payments)
-    }catch(err){
-        res.status(500).send(err)
+    if (!['Oncasement', 'Decasement'].includes(paymentType)) {
+      return res.status(400).json({ error: "paymentType must be 'Oncasement' or 'Decasement'" });
     }
-}
-const updatepayment = async(req,res)=>{
-    try{
-        const {id} = req.params;
-        const payment = await Payment.findOne({where:{id:id}})
-        if(!payment){
-            return res.status(404).send('there is no payment with this id')
-        }
-        await Payment.updateId(req.body,{where:{id:id}})
-        return res.status(200).json(payment)
+    if (isNaN(paymentMontant) || Number(paymentMontant) < 0) {
+      return res.status(400).json({ error: 'paymentMontant must be a positive number' });
     }
-    catch(err){
-        res.status(500).send(err)
+    const payment = await Payment.create({ paymentTitle, paymentDate, paymentMontant, paymentType });
+    return res.status(201).json({ message: 'Payment added successfully', payment });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const getall = async (req, res) => {
+  try {
+    const payments = await Payment.findAll({});
+    return res.status(200).json(payments);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const updatepayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const payment = await Payment.findOne({ where: { id } });
+    if (!payment) {
+      return res.status(404).json({ message: 'Payment not found' });
     }
-}
-const deletePayment = async(req,res)=>{
-    try{
-        const {id} = req.params
-        if(!id){
-            return res.status(400).send('need the id to delete')
-        }
-        const payment = await Payment.findOne({where:{id:id}})
-        if(!payment){
-            return res.status(404).send('there is no payment with this id')
-        }
-        await Payment.destroy({where:{id:id}})
-        res.status(200).send('the payment is deleted!!')
-    }catch(err){
-        res.status(500).send(err)
+    await Payment.update(req.body, { where: { id } });
+    const updated = await Payment.findOne({ where: { id } });
+    return res.status(200).json({ message: 'Payment updated successfully', payment: updated });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const deletePayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({ error: 'id is required' });
     }
-}
+    const payment = await Payment.findOne({ where: { id } });
+    if (!payment) {
+      return res.status(404).json({ message: 'Payment not found' });
+    }
+    await Payment.destroy({ where: { id } });
+    return res.status(200).json({ message: 'Payment deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 const getPayment = async (req, res) => {
-    try {
-        let { queryStatus, queryTitle } = req.query;
+  try {
+    let { queryType, queryTitle } = req.query;
 
-        queryStatus = queryStatus ? queryStatus.toLowerCase() : '';
+    const whereCondition = {};
 
-        const whereCondition = {};
-
-        if (queryStatus && !['Oncasement','Decasement'].includes(queryStatus)) {
-            return res.status(400).json({ error: "QueryStatus must be 'active' or 'expired'" });
-        }
-
-        if (queryStatus) {
-            whereCondition.status = queryStatus;
-        }
-
-        if (queryTitle && typeof queryTitle === 'string' && queryTitle.trim() !== '') {
-            whereCondition[Op.and] = [
-                Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('paymentTitle')), {
-                    [Op.like]: `%${queryTitle.toLowerCase()}%`
-                })
-            ];
-        }
-        
-
-        const payments = await Payment.findAll({
-            where: whereCondition,
-        });
-
-        return res.status(200).json(payments);
-    } catch (err) {
-        console.error("Error in getProgrammes:", err);
-        return res.status(500).json({ error: "Internal server error", details: err.message });
-    }};
-    module.exports = {
-        addpayment,
-        getPayment,
-        getall,
-        updatepayment,
-        deletePayment
+    if (queryType) {
+      if (!['Oncasement', 'Decasement'].includes(queryType)) {
+        return res.status(400).json({ error: "queryType must be 'Oncasement' or 'Decasement'" });
+      }
+      whereCondition.paymentType = queryType;
     }
+
+    if (queryTitle && queryTitle.trim() !== '') {
+      whereCondition[Op.and] = [
+        Sequelize.where(Sequelize.fn('LOWER', Sequelize.col('paymentTitle')), {
+          [Op.like]: `%${queryTitle.toLowerCase()}%`,
+        }),
+      ];
+    }
+
+    const payments = await Payment.findAll({ where: whereCondition });
+    return res.status(200).json(payments);
+  } catch (err) {
+    console.error('Error in getPayment:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { addpayment, getPayment, getall, updatepayment, deletePayment };

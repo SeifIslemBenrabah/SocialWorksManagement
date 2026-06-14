@@ -1,67 +1,49 @@
-import React from 'react'
-import {Route,Routes,Navigate} from 'react-router-dom'
-import Home from '../Home'
-import Login from '../Login'
-import ForgetPwd from '../ForgetPwd'
-import DashboardC from '../DashboardC'
-import NotFound from '../NotFound'
-import { AuthData } from '../../Auth/AuthWrapper'
-import Commette from '../Commette'
-import Programmes from '../Programmes'
-import Demand from '../Demand'
-import Profile from '../Profile'
-import Meeting from '../Meeting'
-import UDemand from '../UDemand'
-import UProgrammes from '../UProgrammes'
-import Users from '../Users'
-import ProgrammeDetail from '../ProgrammeDetail'
-import Admin from '../Admin'
-import EmployeList from '../EmployeList'
-import CommiteList from '../CommiteList'
-const RenderRoutes = () => {
-    const {user}= AuthData();
-    console.log(user)
-  return (
-    
-    <Routes>
-      <Route path='/' element={<Home/>}/>
-      <Route path='/login' element={<Login/>}/>
-      <Route path='/ForgetPwd' element={<ForgetPwd/>}/>
-      {user.isAuth && user.role === "comitte" &&(
-      <>
-      <Route path='/Commette' element={<Commette/>}>
-      <Route index element={<Navigate to="Dashboard" />} />
-      <Route path="Dashboard" element={<DashboardC/>} />
-      <Route path="Programmes" element={<Programmes/>}/>
-      <Route path="Demand" element={<Demand/>}/>
-      <Route path="Profile" element={<Profile/>}/>
-      <Route path="Meeting" element={<Meeting/>}/>
-      </Route>
-    </>
-    )}
-    {user.isAuth && user.role=== "user"&&(
-      <>
-      <Route path='/Users' element={<Users/>}>
-      <Route index element={<Navigate to="UProgrammes"/>} />
-      <Route path="UProgrammes" element={<UProgrammes/>}/>
-      <Route path="programme/:id" element={<ProgrammeDetail />} />
-      <Route path="UDemand" element={<UDemand/>}/>
-      <Route path="Profile" element={<Profile/>}/>
-      </Route>
-    </>
-    )}
-    {user.isAuth && user.role === "admin"&&(
-      <>
-      <Route path='/Admin' element={<Admin/>}>
-      <Route index element={<Navigate to="Employe"/>} />
-      <Route path="Employe" element={<EmployeList/>}/>
-      <Route path="Commite" element={<CommiteList/>}/>
-      </Route>
-      </>
-    )}
-    <Route path='*' element={<NotFound/>}/>
-    </Routes>
-  )
-}
+import React from "react";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { AuthData } from "../../Auth/AuthWrapper";
+import { routesConfig } from "./RoutesConfig";
+import NotFound from "../NotFound";
 
-export default RenderRoutes
+const RenderRoutes = () => {
+  const { User } = AuthData();
+
+  const renderRoutes = (routes) => {
+    return routes.map(({ path, element, children }, index) => (
+      <Route key={index} path={path} element={element}>
+        {children && renderRoutes(children)}
+      </Route>
+    ));
+  };
+
+  return (
+    <Routes>
+      {renderRoutes(routesConfig.public)}
+
+      {User?.isAuth && User.roletype === "Committee" && (
+        <>
+          {renderRoutes(routesConfig.committee)}
+          <Route path="*" element={<Navigate to="/Committee" replace />} />
+        </>
+      )}
+
+      {User?.isAuth && User.roletype === "Employee" && (
+        <>
+          {renderRoutes(routesConfig.user)}
+          <Route path="*" element={<Navigate to="/Employee" replace />} />
+        </>
+      )}
+
+      {User?.isAuth && User.roletype === "Admin" && (
+        <>
+          {renderRoutes(routesConfig.admin)}
+          <Route path="*" element={<Navigate to="/Admin" replace />} />
+        </>
+      )}
+
+      {/* Catch-all 404 */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
+export default RenderRoutes;

@@ -1,75 +1,75 @@
-import React,{createContext ,useContext , useEffect,useState} from 'react'
-import axios from 'axios'
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import axios from 'axios';
 import RenderRoutes from '../Componenets/Structure/RenderRoutes';
-import { useNavigate } from 'react-router-dom'
-//create the authcontext
-const AuthContext = createContext();
+import { useNavigate } from 'react-router-dom';
 
-// Custom hook to access the AuthContext
-export const AuthData = () => useContext(AuthContext);
+const AuthContext = createContext(null);
 
-const AuthWrapper = () => {
-    const navigate = useNavigate();
-    const [user, setUser] = useState(() => {
-        const savedUser = localStorage.getItem('user');
-        return savedUser ? 
-        JSON.parse(savedUser) 
-        : { email: '', isAuthenticated: false, token: null, role: null, id: null };
-    });
-    
-    useEffect(()=>{
-        if(user && user.isAuthenticated){
-            localStorage.setItem('user', JSON.stringify(user));
-        }
-        else{
-            localStorage.removeItem('user');
-        }
-    }, [user])
-
-const login = async (email, password) => {  
-  if (email && password) {
-    try {
-      if (email === "user@gmail.com" && password === "user") {
-        const id = 1;
-        const role = "admin";
-        const accessToken = 'seifislem';  // This would be the actual token from the backend
-
-        if (role) {
-          navigate("/Admin");  // Navigate to Dashboard
-        } else {
-          console.log("Unhandled role");
-        }
-
-        // Set user details (could be handled with context or state)
-        setUser({
-          email,
-          isAuth: true,
-          token: accessToken,
-          role: 'admin',
-          id,
-        });
-      }
-    } catch (err) {
-      console.log('Login error:', err);  // Handle error
-    }
-  } else {
-    console.log('Please provide email and password');
+export const AuthData = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('AuthData must be used within an AuthWrapper');
   }
+  return context;
 };
 
-    const logout = () =>{
-        setUser({
-            email:'',isAuth:false,
-            token:null,
-            role:null
-        })
-        localStorage.removeItem('user')
-    }
-  return (
-    <AuthContext.Provider value={{user,login,logout}}>
-      <RenderRoutes/>
-    </AuthContext.Provider>
-  )
-}
+const emptyUser = { email: '', fullName: '', isAuth: false, token: null, roletype: null, roleName: null, id: null };
 
-export default AuthWrapper
+const AuthWrapper = () => {
+  const navigate = useNavigate();
+
+  const [User, setUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('user');
+      return saved ? JSON.parse(saved) : emptyUser;
+    } catch {
+      return emptyUser;
+    }
+  });
+
+  useEffect(() => {
+    if (User.isAuth && User.roletype) {
+      localStorage.setItem('user', JSON.stringify(User));
+      navigate(`/${User.roletype}`);
+    } else {
+      localStorage.removeItem('user');
+    }
+  // navigate intentionally omitted — adding it causes redirect loops on every render
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [User.isAuth, User.roletype]);
+
+  const login = async (email, password) => {
+    if (!email || !password) return;
+
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/login`,
+      { email, password },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+
+    if (data && data.accessToken) {
+      setUser({
+        email: data.user?.email || email,
+        fullName: data.user?.fullName || '',
+        isAuth: true,
+        token: data.accessToken,
+        roletype: data.roletype || '',
+        roleName: data.roleName || '',
+        id: data.user?.id || null,
+      });
+    }
+  };
+
+  const logout = () => {
+    setUser(emptyUser);
+    localStorage.removeItem('user');
+  };
+
+  return (
+    <AuthContext.Provider value={{ User, login, logout }}>
+      <RenderRoutes />
+    </AuthContext.Provider>
+  );
+};
+
+export default AuthWrapper;

@@ -25,7 +25,7 @@ const UDemand = () => {
           <div className='w-11/12 md:w-5/12 h-5/6 overflow-hidden bg-white rounded-md flex flex-col items-center px-10 pt-2 gap-2 relative'>
           <div className='w-full flex flex-row items-center justify-between'>
           {detail.name}
-          <div className='border-2 border-black p-1 rounded-lg'>
+          <div className='border-2 border-black p -1 rounded-lg'>
             {detail.state}
           </div>
           </div>

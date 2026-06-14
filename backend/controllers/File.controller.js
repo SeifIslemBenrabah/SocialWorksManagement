@@ -3,104 +3,106 @@ const path = require('path');
 const File = require('../models/File');
 const Demand = require('../models/Demande');
 
-// ✅ Ajouter un fichier
+const UPLOADS_DIR = path.resolve(__dirname, '../uploads');
+
+const safeFilePath = (relativePath) => {
+  const resolved = path.resolve(__dirname, '../', relativePath);
+  if (!resolved.startsWith(UPLOADS_DIR)) {
+    return null;
+  }
+  return resolved;
+};
+
 const createfile = async (req, res) => {
-    try {
-        const { demandeId, name } = req.body;
-        const filePath = req.file ? `uploads/${req.file.filename}` : null;
+  try {
+    const { demandeId, name } = req.body;
+    const filePath = req.file ? `uploads/${req.file.filename}` : null;
 
-        if (!demandeId) {
-            return res.status(400).json({ msg: "Need the demand ID!" });
-        }
-
-        const demand = await Demand.findOne({ where: { id: demandeId } });
-
-        if (!demand) {
-            return res.status(404).json({ msg: "There is no demand with this ID!" });
-        }
-
-        const file = await File.create({ name, demandeId, path: filePath });
-
-        return res.status(201).json({ msg: "File is created!", file });
-    } catch (err) {
-        console.error("Error in createfile:", err);
-        return res.status(500).json({ msg: err.message });
+    if (!demandeId) {
+      return res.status(400).json({ message: 'demandeId is required' });
     }
+
+    const demand = await Demand.findOne({ where: { id: demandeId } });
+    if (!demand) {
+      return res.status(404).json({ message: 'Demand not found' });
+    }
+
+    const file = await File.create({ name, demandeId, path: filePath });
+    return res.status(201).json({ message: 'File created', file });
+  } catch (err) {
+    console.error('Error in createfile:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
-// ✅ Récupérer un fichier
 const getfile = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const file = await File.findOne({ where: { id } });
+  try {
+    const { id } = req.params;
+    const file = await File.findOne({ where: { id } });
 
-        if (!file) {
-            return res.status(404).json({ msg: "File not found" });
-        }
-
-        const filePath = path.join(__dirname, "../", file.path);
-        
-        res.set({
-            'Content-Type': 'multipart/form-data',
-            'X-Custom-Header': 'CustomHeaderValue',
-        });
-
-        return res.sendFile(filePath, (err) => {
-            if (err) {
-                return res.status(500).json({ msg: "Error sending the file." });
-            }
-        });
-    } catch (err) {
-        console.error("Error in getfile:", err);
-        return res.status(500).json({ msg: err.message });
+    if (!file) {
+      return res.status(404).json({ message: 'File not found' });
     }
+
+    const filePath = safeFilePath(file.path);
+    if (!filePath) {
+      return res.status(400).json({ message: 'Invalid file path' });
+    }
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: 'File no longer exists on disk' });
+    }
+
+    return res.sendFile(filePath, (err) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error sending the file' });
+      }
+    });
+  } catch (err) {
+    console.error('Error in getfile:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
-// ✅ Mettre à jour un fichier
 const updatefile = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const file = await File.findOne({ where: { id } });
+  try {
+    const { id } = req.params;
+    const file = await File.findOne({ where: { id } });
 
-        if (!file) {
-            return res.status(404).json({ msg: "There is no file with this ID" });
-        }
-
-        await File.update(req.body, { where: { id } });
-
-        return res.status(200).json({ msg: "The file is updated successfully" });
-    } catch (err) {
-        console.error("Error in updatefile:", err);
-        return res.status(500).json({ msg: err.message });
+    if (!file) {
+      return res.status(404).json({ message: 'File not found' });
     }
+
+    await File.update(req.body, { where: { id } });
+    return res.status(200).json({ message: 'File updated successfully' });
+  } catch (err) {
+    console.error('Error in updatefile:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
-// ✅ Supprimer un fichier
 const deletefile = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const file = await File.findOne({ where: { id } });
+  try {
+    const { id } = req.params;
+    const file = await File.findOne({ where: { id } });
 
-        if (!file) {
-            return res.status(404).json({ msg: "There is no file with this ID" });
-        }
-
-        // Supprimer le fichier physique
-        if (fs.existsSync(file.path)) {
-            fs.unlinkSync(file.path);
-        }
-
-        await file.destroy();
-        return res.status(200).json({ msg: "The file is deleted successfully" });
-    } catch (err) {
-        console.error("Error in deletefile:", err);
-        return res.status(500).json({ msg: err.message });
+    if (!file) {
+      return res.status(404).json({ message: 'File not found' });
     }
+
+    if (file.path) {
+      const filePath = safeFilePath(file.path);
+      if (filePath && fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
+    await file.destroy();
+    return res.status(200).json({ message: 'File deleted successfully' });
+  } catch (err) {
+    console.error('Error in deletefile:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
-module.exports = {
-    createfile,
-    getfile,
-    updatefile,
-    deletefile
-};
+module.exports = { createfile, getfile, updatefile, deletefile };

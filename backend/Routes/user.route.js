@@ -1,10 +1,23 @@
 const express = require('express');
 const Authjwt = require('../middleware/Authjwt');
-const { createUser,getAll,deleteAccount,getByUserRole,getByEmailOrName} = require('../controllers/User.controller');
-const router = express.Router()
-router.post('/',createUser)
-router.get('/',getAll)
-router.get('/search', getByEmailOrName);
-router.get('/:id',getByUserRole)
-router.delete('/:id',deleteAccount)
+const {
+  createUser,
+  getAllUsers,
+  getEmployes,
+  getCommite,
+  getByEmailOrName,
+  updateUser,
+  deleteAccount,
+} = require('../controllers/User.controller');
+
+const router = express.Router();
+
+router.post('/', Authjwt(['Admin']), createUser);
+router.get('/', Authjwt(['Admin']), getAllUsers);
+router.get('/search', Authjwt(['Admin']), getByEmailOrName);
+router.get('/employes', Authjwt(['Admin', 'Committee']), getEmployes);
+router.get('/commite', Authjwt(['Admin', 'Committee']), getCommite);
+router.put('/:id', Authjwt(['Admin']), updateUser);
+router.delete('/:id', Authjwt(['Admin']), deleteAccount);
+
 module.exports = router;

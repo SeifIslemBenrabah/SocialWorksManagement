@@ -6,7 +6,7 @@ import profile from '../Assets/profile.png'
 import { Link, Outlet, useNavigate  } from 'react-router-dom'
 const Commette = () => {
     const navigate = useNavigate();
-    const {user, logout} =AuthData()
+    const {User, logout} =AuthData()
     const handleLogout = () => {
         logout(); // Call the logout function from AuthContext
         navigate('/'); // Redirect to the login page
@@ -87,7 +87,7 @@ const Commette = () => {
                 </button>
                 </div>
                 <div className='flex flex-row items-center gap-2'>
-                    {user.token}
+                    {User.fullName}
                     <div className='w-10 h-10 rounded-full overflow-hidden'>
                     <img src={profile} alt='profile'/>
                     </div>

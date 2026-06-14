@@ -1,35 +1,43 @@
 const express = require('express');
 const multer = require('multer');
-const {
-  addDemand,
-  getall,
-  deletedemand,
-  updatedemand,
-  getDemands
-} = require('../controllers/Demand.controller');
+const path = require('path');
+const Authjwt = require('../middleware/Authjwt');
+const { addDemand, getall, deletedemand, updatedemand, getDemands } = require('../controllers/Demand.controller');
 
 const router = express.Router();
 
-// ✅ Configure Multer storage
+const ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads'); // Ensure this folder exists!
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
+  destination: (req, file, cb) => cb(null, './uploads'),
+  filename: (req, file, cb) => cb(null, `${Date.now()}-${path.basename(file.originalname)}`),
 });
 
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (ALLOWED_TYPES.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only PDF, JPEG and PNG files are allowed'));
+    }
+  },
+});
 
-// ✅ Apply `upload.array('files', 5)` in the route
-router.post('/', upload.any(), addDemand);
-router.get('/', getall);
-router.get('/search', getDemands);
-router.put('/:id', updatedemand);
-router.delete('/:id', deletedemand);
+const handleMulterError = (err, req, res, next) => {
+  if (err instanceof multer.MulterError || err) {
+    return res.status(400).json({ error: err.message });
+  }
+  next();
+};
 
-// Include file-related routes
+router.post('/', Authjwt(['Employee', 'Committee']), upload.any(), handleMulterError, addDemand);
+router.get('/', Authjwt(['Admin', 'Committee']), getall);
+router.get('/search', Authjwt(['Admin', 'Committee', 'Employee']), getDemands);
+router.put('/:id', Authjwt(['Admin', 'Committee']), upload.any(), handleMulterError, updatedemand);
+router.delete('/:id', Authjwt(['Admin', 'Committee']), deletedemand);
+
 const fileRoute = require('./File.route');
 router.use('/file', fileRoute);
 

@@ -1,56 +1,61 @@
-const Categorie = require('../models/Categorie')
+const Categorie = require('../models/Categorie');
 
-const addCat = async(req,res)=>{
-    try{
-        const {CategorieName} = req.body;
-        if(!CategorieName){
-            return res.status(400).send('need name to create the new cat')
-        }
-        const categorie = await Categorie.create({CategorieName:CategorieName});
-        res.status(203).send('the cat is created!!')
-    }catch(err){
-        res.status(500).send(err)
+const addCat = async (req, res) => {
+  try {
+    const { CategorieName } = req.body;
+    if (!CategorieName || !CategorieName.trim()) {
+      return res.status(400).json({ error: 'CategorieName is required' });
     }
-}
-const deleteCat = async(req,res)=>{
-    try{
-        const {id} = req.params;
-        const cat = Categorie.findOne({where:{id:id}})
-        if(!cat){
-            res.status(404).send('there is no cat with this id')
-        }
-        await Categorie.destroy({where:{id:id}})
-        res.status(200).send('the cat is deleted!!')
-    }catch(err){
-        res.status(500).send(err)
+    const categorie = await Categorie.create({ CategorieName: CategorieName.trim() });
+    return res.status(201).json({ message: 'Category created', categorie });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const deleteCat = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const cat = await Categorie.findOne({ where: { id } });
+    if (!cat) {
+      return res.status(404).json({ message: 'Category not found' });
     }
-}
-const getall = async(req,res)=>{
-    try{
-        const cats = await Categorie.findAll()
-        res.status(200).send(cats)
+    await cat.destroy();
+    return res.status(200).json({ message: 'Category deleted' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const getall = async (req, res) => {
+  try {
+    const cats = await Categorie.findAll();
+    return res.status(200).json(cats);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const updatecat = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { CategorieName } = req.body;
+    if (!CategorieName || !CategorieName.trim()) {
+      return res.status(400).json({ message: 'CategorieName is required' });
     }
-    catch(err){
-        res.status(500).send(err)
+    const cat = await Categorie.findOne({ where: { id } });
+    if (!cat) {
+      return res.status(404).json({ message: 'Category not found' });
     }
-}
-const updatecat = async(req,res)=>{
-    try{
-        const {id} = req.params
-        const {CategorieName} = req.body
-        const cat = await Categorie.findOne({where:{id:id}})
-        if(!cat || !CategorieName){
-            res.status(404).send('there is no cat with this id or there is no CategorieName send in the req')
-        }
-        await Categorie.update({CategorieName:CategorieName},{where:{id:id}})
-        res.status(200).send('update')
-    }catch(err){
-        res.status(500).send(err)
-    }
-}
-module.exports ={
-    addCat,
-    deleteCat,
-    getall,
-    updatecat
-}
+    await cat.update({ CategorieName: CategorieName.trim() });
+    return res.status(200).json({ message: 'Category updated', cat });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { addCat, deleteCat, getall, updatecat };
