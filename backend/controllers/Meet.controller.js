@@ -48,10 +48,6 @@ const getMeets = async (req, res) => {
       ],
     });
 
-    if (!meets.length) {
-      return res.status(404).json({ message: 'No meetings found' });
-    }
-
     return res.status(200).json(meets);
   } catch (err) {
     console.error('Error fetching meetings:', err);

@@ -4,31 +4,26 @@ const Programme = require('../models/Programme');
 const User = require('../models/User');
 const File = require('../models/File');
 const Categorie = require('../models/Categorie');
+const Notification = require('../models/Notification');
 const fs = require('fs');
 const path = require('path');
 
 const addDemand = async (req, res) => {
   try {
-    const { userId, programmeId, status } = req.body;
-    const files = req.files || [];
+    const { programmeId } = req.body;
+    const userId = req.user.id;
 
-    if (!userId || isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid or missing userId' });
-    }
     if (!programmeId || isNaN(programmeId)) {
       return res.status(400).json({ error: 'Invalid or missing programmeId' });
     }
 
-    const user = await User.findByPk(userId);
-    if (!user) return res.status(404).json({ error: 'User not found' });
-
     const programme = await Programme.findByPk(programmeId);
     if (!programme) return res.status(404).json({ error: 'Programme not found' });
 
-    const demand = await Demand.create({ userId, programmeId, status: status || 'Waiting' });
+    const demand = await Demand.create({ userId, programmeId, status: 'Waiting' });
 
-    if (files.length > 0) {
-      const fileData = files.map((file) => ({
+    if (req.files && req.files.length > 0) {
+      const fileData = req.files.map((file) => ({
         demandeId: demand.id,
         name: file.originalname,
         path: `uploads/${file.filename}`,
@@ -67,15 +62,23 @@ const deletedemand = async (req, res) => {
 
 const getall = async (req, res) => {
   try {
+    const where = {};
+    if (req.user.roletype === 'Employee') {
+      where.userId = req.user.id;
+    }
+
     const demandes = await Demand.findAll({
+      where,
       include: [
         { model: File, attributes: ['id', 'name', 'path'] },
         {
           model: Programme,
-          attributes: ['title'],
-          include: [{ model: Categorie, attributes: ['CategorieName'] }],
+          attributes: ['id', 'title', 'description', 'categorieId'],
+          include: [{ model: Categorie, attributes: ['id', 'CategorieName'] }],
         },
+        { model: User, attributes: ['id', 'fullName', 'email'] },
       ],
+      order: [['createdAt', 'DESC']],
     });
     return res.status(200).json(demandes);
   } catch (err) {
@@ -94,12 +97,19 @@ const updatedemand = async (req, res) => {
       return res.status(404).json({ error: 'Demand not found' });
     }
 
-    const validStatuses = ['Accepted', 'Complete', 'Waiting', 'Incomplete'];
+    const validStatuses = ['Accepted', 'Complet', 'Waiting', 'Incomplet'];
     if (status && !validStatuses.includes(status)) {
       return res.status(400).json({ error: `Status must be one of: ${validStatuses.join(', ')}` });
     }
 
     await demand.update({ status });
+
+    const programme = await Programme.findByPk(demand.programmeId, { attributes: ['title'] });
+    await Notification.create({
+      userId: demand.userId,
+      message: `Your demand for "${programme?.title || 'a programme'}" has been updated to "${status}".`,
+      demandId: demand.id,
+    });
 
     if (req.files && req.files.length > 0) {
       const existingFiles = await File.findAll({ where: { demandeId: id } });
@@ -148,6 +158,7 @@ const getDemands = async (req, res) => {
           where: Object.keys(whereCondition).length ? whereCondition : undefined,
           attributes: ['id', 'categorieId', 'title', 'description'],
         },
+        { model: User, attributes: ['id', 'fullName', 'email'] },
       ],
     });
 

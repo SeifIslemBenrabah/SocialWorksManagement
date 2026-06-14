@@ -2,7 +2,7 @@ import Home from "../Home";
 import Login from "../Login";
 import ForgetPwd from "../ForgetPwd";
 import DashboardC from "../DashboardC";
-import NotFound from "../NotFound";
+import DashboardA from "../DashboardA";
 import Commette from "../Commette";
 import Programmes from "../Programmes";
 import Demand from "../Demand";
@@ -22,7 +22,6 @@ export const routesConfig = {
     { path: "/", element: <Home /> },
     { path: "/login", element: <Login /> },
     { path: "/forget-pwd", element: <ForgetPwd /> },
-    {path:"*",element:<NotFound/>}
   ],
   committee: [
     {
@@ -56,7 +55,8 @@ export const routesConfig = {
       path: "/Admin",
       element: <Admin />,
       children: [
-        { path: "", element: <EmployeList /> },
+        { path: "", element: <DashboardA /> },
+        { path: "dashboard", element: <DashboardA /> },
         { path: "employees", element: <EmployeList /> },
         { path: "committees", element: <CommiteList /> },
       ],

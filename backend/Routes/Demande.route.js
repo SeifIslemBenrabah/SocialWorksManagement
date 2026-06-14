@@ -33,7 +33,7 @@ const handleMulterError = (err, req, res, next) => {
 };
 
 router.post('/', Authjwt(['Employee', 'Committee']), upload.any(), handleMulterError, addDemand);
-router.get('/', Authjwt(['Admin', 'Committee']), getall);
+router.get('/', Authjwt(['Admin', 'Committee', 'Employee']), getall);
 router.get('/search', Authjwt(['Admin', 'Committee', 'Employee']), getDemands);
 router.put('/:id', Authjwt(['Admin', 'Committee']), upload.any(), handleMulterError, updatedemand);
 router.delete('/:id', Authjwt(['Admin', 'Committee']), deletedemand);

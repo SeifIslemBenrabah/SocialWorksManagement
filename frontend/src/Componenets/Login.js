@@ -38,8 +38,15 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-row justify-center items-center bg-gradient-to-b from-white to-pblue w-full h-screen">
-      <a href='/' className='absolute top-2 left-4 bg-dblue rounded-full py-1 pl-2 pr-3 gap-2 text-white flex flex-row'>
+    <div
+      className="flex flex-row justify-center items-center w-full h-screen"
+      style={{
+        backgroundImage: 'radial-gradient(circle, rgba(59,130,246,0.13) 1.5px, transparent 1.5px), linear-gradient(135deg,#004080 0%,#1a5fa8 55%,#3b82f6 100%)',
+        backgroundSize: '22px 22px, cover',
+        backgroundRepeat: 'repeat, no-repeat',
+      }}
+    >
+      <a href='/' className='absolute top-4 left-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-full py-1 pl-2 pr-3 gap-1 text-white flex flex-row items-center text-sm font-medium transition-all'>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
         </svg>

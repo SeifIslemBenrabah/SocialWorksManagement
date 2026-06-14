@@ -174,6 +174,29 @@ const loginUser = async (req, res) => {
   }
 };
 
+const updateProfile = async (req, res) => {
+  try {
+    const { fullName, email, newPassword } = req.body;
+    const user = await User.findByPk(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const updateData = {};
+    if (fullName && fullName.trim()) updateData.fullName = fullName.trim();
+    if (email && email.trim()) updateData.email = email.toLowerCase().trim();
+    if (Object.keys(updateData).length > 0) await user.update(updateData);
+
+    if (newPassword && newPassword.trim().length >= 8) {
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await Account.update({ password: hashedPassword }, { where: { id: req.user.accountId } });
+    }
+
+    return res.status(200).json({ id: user.id, fullName: user.fullName, email: user.email });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 const updateUser = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
@@ -206,6 +229,7 @@ module.exports = {
   getByEmailOrName,
   createUser,
   loginUser,
+  updateProfile,
   updateUser,
   deleteAccount,
 };
